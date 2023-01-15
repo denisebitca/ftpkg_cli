@@ -95,7 +95,7 @@ while (( $# > 0 )); do
 			continue ;
 		fi
 		export PACKAGE_NAME=${2}
-		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-z]+(\.+[a-z]+){2,}"; echo $?)" == "1" ]; then
+		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-zA-Z]+(\.+[a-zA-Z]+){2,}"; echo $?)" == "1" ]; then
 			export ERROR=2
 			shift
 			continue ;
@@ -111,7 +111,7 @@ while (( $# > 0 )); do
 			continue ;
 		fi
 		export PACKAGE_NAME=${2}
-		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-z]+(\.+[a-z]+){2,}"; echo $?)" == "1" ]; then
+		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-zA-Z]+(\.+[a-zA-Z]+){2,}"; echo $?)" == "1" ]; then
 			export ERROR=3
 			shift
 			continue ;
