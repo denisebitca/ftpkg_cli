@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+#    Shell file for obtaining ftpkg password in docker container
+#
+#    Copyright (C) 2023 Denise BITCA
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details, included in the
+#	 LICENSE file.
+#
+#
+
+cd /opt || exit
+Xvfb -ac -listen tcp "$DISPLAY" &
+/mnt/ftpkg &
+nc -l localhost 4242 -q 1 < /opt/reply > /dev/null
+nc -l localhost 4242 -q 1 < /opt/answer > /opt/response &
+xdotool key Tab
+xdotool key Tab
+xdotool key Tab
+xdotool key Tab
+xdotool key Tab
+xdotool key Return
+head -1 response | cut -d'/' -f3 | sed -z '$ s/\n$//'
+rm response

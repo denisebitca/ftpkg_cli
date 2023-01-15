@@ -1,0 +1,198 @@
+#!/bin/bash
+
+export VERSION="v0.1"
+
+print_echo()
+{
+	echo -ne "$1"
+}
+
+print_help()
+{
+	print_echo "Usage: ftpkg_cli [OPTION]...\n"
+	print_echo "Formatting options (combining possible):\n"
+	print_echo "\t--no-header\t\t\tHide license header (default: false)\n"
+	print_echo "\t--no-color\t\t\tDisable color output (default: false)\n"
+	print_echo "\t--script-friendly\t\tStable formatting for usage in scripts (default: false)\n"
+	print_echo "General options (only one at a time):\n"
+	print_echo "\t-q, --query\t\t\tGet list of available packages\n"
+	print_echo "\t-i, --install <package_name>\tInstall package\n"
+	print_echo "\t-u, --uninstall <package_name>\tUninstall package\n"
+	print_echo "Query options (for -q, --query):\n"
+	print_echo "\t--installed\t\t\tFilter packages that are not installed (default: false)\n"
+	print_echo "Install/uninstall options (for -u, -i, --install, --uninstall):\n"
+	print_echo "\t--password <password>\t\tPassword for the ftpkg server (default: none)\n"
+}
+
+print_header()
+{
+	print_echo "ftpkg_cli $VERSION - terminal utility for installing curated Flatpak packages by the 42 Paris team on 42 Paris dumps\n"
+	print_echo "Copyright (C) 2023 Denise BITCA \nThis program comes with ABSOLUTELY NO WARRANTY; This is free software, and you are welcome to redistribute it under certain conditions; see LICENSE file for more.\n\n"
+}
+
+# Argument parsing
+if [ "$#" == "0" ]; then
+	print_header
+	print_help
+	exit 1
+fi
+
+export ONLY=0;
+export ERROR=0;
+export COMMAND=0;
+export SCRIPT_FRIENDLY=0;
+export NO_PRETTY_PRINTING=0;
+export INSTALLED=0;
+export NO_HEADER=0;
+export PACKAGE_NAME="";
+export PASSWORD="";
+
+POSITIONAL=()
+while (( $# > 0 )); do
+	if [ "$ERROR" != "0" ]; then
+		break
+	fi
+	case "${1}" in
+		-h|--help)
+			print_header
+			print_help
+			exit 0;
+		;;
+		--script-friendly)
+		export SCRIPT_FRIENDLY=1
+		shift
+		;;
+		--no-color)
+		export NO_PRETTY_PRINTING=1
+		shift
+		;;
+		--no-header)
+		export NO_HEADER=1
+		shift
+		;;
+		--installed)
+		if [ "$COMMAND" != "1" ]; then
+			export ERROR=1
+			shift
+			continue ;
+		fi
+		export INSTALLED=1
+		shift
+		;;
+		-q|--query)
+		if [ "$COMMAND" != "0" ]; then
+			export ERROR=1
+			shift
+			continue ;
+		fi
+		export COMMAND=1
+		shift
+		;;
+		-i|--install)
+		if [ "$COMMAND" != "0" ]; then
+			export ERROR=1
+			shift
+			continue ;
+		fi
+		export PACKAGE_NAME=${2}
+		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-z]+(\.+[a-z]+){2,}"; echo $?)" == "1" ]; then
+			export ERROR=2
+			shift
+			continue ;
+		fi
+		export COMMAND=2
+		shift
+		shift
+		;;
+		-u|--uninstall)
+		if [ "$COMMAND" != "0" ]; then
+			export ERROR=1
+			shift
+			continue ;
+		fi
+		export PACKAGE_NAME=${2}
+		if [ "$PACKAGE_NAME" == "" ] || [ "$(echo "$PACKAGE_NAME" | grep -E -xqs "[a-z]+(\.+[a-z]+){2,}"; echo $?)" == "1" ]; then
+			export ERROR=3
+			shift
+			continue ;
+		fi
+		export COMMAND=3
+		shift
+		shift
+		;;
+		--password)
+		if [ "$COMMAND" != "2" ] && [ "$COMMAND" != "3" ]; then
+			export ERROR=1
+			shift
+			continue ;
+		fi
+		if [ "${2}" == "" ]; then
+			export ERROR=5
+			export COMMAND=0
+			shift
+			continue ;
+		fi
+		export PASSWORD=${2}
+		shift
+		shift
+		;;
+		*)
+			POSITIONAL+=("${1}")
+			shift
+		;;
+	esac
+done
+
+if [ "$NO_HEADER" != "1" ]; then
+	print_header
+fi;
+
+set -- "${POSITIONAL[@]}" # restore positional params
+
+SNUF=${POSITIONAL[*]}
+
+if [ "$SNUF" != "" ]; then
+	print_echo "ftpkg_cli: Arguments missing or incorrect.\n"
+	exit 1;
+fi
+
+case "$COMMAND" in
+	1)
+		./ftpkg_cli_query_parse.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$INSTALLED"
+		exit 0;
+	;;
+	2)
+		./ftpkg_cli_install.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD"
+		exit 0;
+	;;
+	3)
+		./ftpkg_cli_uninstall.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD"
+		exit 0;
+	;;
+	4)
+		print_help
+		exit 1;
+	;;
+	*)
+		if [ "$ERROR" == "0" ]; then
+			export ERROR=4
+		fi
+	;;
+esac
+
+if [ "$ERROR" == "1" ]; then
+	print_echo "ftpkg_cli: Ambiguous argument placement.\n\n"
+elif [ "$ERROR" == "2" ]; then
+	print_echo "ftpkg_cli: Install arguments malformed or incorrect.\n\n"
+elif [ "$ERROR" == "3" ]; then
+	print_echo "ftpkg_cli: Uninstall arguments malformed or incorrect.\n\n"
+elif [ "$ERROR" == "4" ]; then
+	print_echo "ftpkg_cli: Arguments missing or incorrect.\n\n"
+elif [ "$ERROR" == "5" ]; then
+	print_echo "ftpkg_cli: Missing password.\n\n"
+fi
+
+if [ "$ERROR" != "0" ]; then
+	print_help
+	exit 1;
+fi

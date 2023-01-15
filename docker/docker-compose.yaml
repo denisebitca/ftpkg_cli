@@ -1,0 +1,7 @@
+services:
+  get_ftpkg_password:
+    image: get_ftpkg_password:latest
+    build: .
+    volumes:
+      - ./opt:/opt
+      - /usr/bin:/mnt
