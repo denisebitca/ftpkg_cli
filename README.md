@@ -43,21 +43,41 @@ Install/uninstall options (for -u, -i, --install, --uninstall):
         --password <password>           Password for the ftpkg server (default: none)
 ```
 
+``./ftpkg_cli -q`` looks like this:
+```
+(...)
+[not installed] eclipse JavaScript
+        Package name: org.eclipse.Javascript
+        Version: 0.15.1
+        Description: The essential tools for any JavaScript developer, including JavaScript, TypeScript, HTML, CSS, XML, Yaml, Markdown languages support
+[installed] Neovim
+        Package name: io.neovim.nvim
+        Version: 0.8.0
+        Description: Vim-fork focused on extensibility and usability
+[not installed] Ghidra
+        Package name: org.ghidra_sre.Ghidra
+        Version: 10.2.2
+        Description: Ghidra Software Reverse Engineering Suite
+[installed] Postman
+        Package name: com.getpostman.Postman
+(...)
+```
 
+For now, you will need the package name (in java format) in order to run install or uninstall operations.
 
 ### What password? ftpkg server? Huh?
 
 The program automatically gets the password for you when running operations that require the password - don't think about it.
 
-If you're on Mac, it might be faster for you to keep the password somewhere and run the command with the password.
+If you're on a Mac dump, it might be faster for you to keep the password somewhere and run the command with the password.
 
-To obtain said password:
+To obtain said password on a Dell dump:
 ```bash
 docker compose -f ./docker/docker-compose.yaml build
 docker compose -f ./docker/docker-compose.yaml run get_ftpkg_password
 ```
 
-To use the password:
+To use the password on a Mac dump:
 ```
 ./ftpkg_cli --install <package name> --password <password>
 ```
