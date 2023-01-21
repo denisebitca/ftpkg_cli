@@ -30,8 +30,8 @@ print()
 if [ "$PASSWORD" == "" ]; then
 	print "$blue" "$bold" "[INFO]"
 	print "" "" " - Running Docker to get the required ftpkg password. This can take a little bit of time. Especially on Mac dumps.\n"
-	docker compose -f ./docker/docker-compose.yaml build --quiet
-	PASSWORD=$(docker compose -f ./docker/docker-compose.yaml run --quiet-pull get_ftpkg_password)
+	docker compose -f $PWD/docker/docker-compose.yaml build --quiet
+	PASSWORD=$(docker compose -f $PWD/docker/docker-compose.yaml run --quiet-pull get_ftpkg_password)
 fi
 
 # Initial CURL - removing '"icon": "<anything>",' with sed
