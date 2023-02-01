@@ -6,6 +6,7 @@ export NO_PRETTY_PRINTING=$1
 export SCRIPT_FRIENDLY=$2
 export PACKAGENAME=$3
 export PASSWORD=$4
+export VERSION=$5
 
 if [ "$NO_PRETTY_PRINTING" != "1" ]; then
 	# Ansi color code variables
@@ -28,10 +29,17 @@ print()
 }
 
 if [ "$PASSWORD" == "" ]; then
+	DOCKER_ERROR=$(docker image inspect ftpkg:$VERSION 2>&1 | wc -l);
+fi
+
+if [ "$DOCKER_ERROR" == "2" ] && [ "$PASSWORD" == "" ]; then
 	print "$blue" "$bold" "[INFO]"
-	print "" "" " - Running Docker to get the required ftpkg password. This can take a little bit of time. Especially on Mac dumps.\n"
-	docker compose -f $PWD/docker/docker-compose.yaml build --quiet
-	PASSWORD=$(docker compose -f $PWD/docker/docker-compose.yaml run --quiet-pull get_ftpkg_password)
+	print "" "" " - This is your first time running this version of ftpkg_cli, so the Docker image needs to be built. This will take a bit, especially on Mac dumps.\n"
+	docker build -q -t ftpkg:$VERSION ./docker 
+fi
+
+if [ "$PASSWORD" == "" ]; then 
+	PASSWORD=$(docker run --mount type=bind,source=/usr/bin,target=/mnt ftpkg:$VERSION)
 fi
 
 # Initial CURL - removing '"icon": "<anything>",' with sed

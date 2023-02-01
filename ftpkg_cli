@@ -164,11 +164,11 @@ case "$COMMAND" in
 		exit 0;
 	;;
 	2)
-		$PWD/ftpkg_cli_install.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD"
+		$PWD/ftpkg_cli_install.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD" "$VERSION"
 		exit 0;
 	;;
 	3)
-		$PWD/ftpkg_cli_uninstall.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD"
+		$PWD/ftpkg_cli_uninstall.sh "$NO_PRETTY_PRINTING" "$SCRIPT_FRIENDLY" "$PACKAGE_NAME" "$PASSWORD" "$VERSION"
 		exit 0;
 	;;
 	4)
