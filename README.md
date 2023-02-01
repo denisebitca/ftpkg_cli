@@ -73,8 +73,8 @@ If you're on a Mac dump, it might be faster for you to keep the password somewhe
 
 To obtain said password on a Dell dump:
 ```bash
-docker compose -f ./docker/docker-compose.yaml build
-docker compose -f ./docker/docker-compose.yaml run get_ftpkg_password
+docker build -q -t ftpkg:v0.1 ./docker
+docker run --mount type=bind,source=/usr/bin,target=/mnt ftpkg:v0.1)
 ```
 
 To use the password on a Mac dump:
