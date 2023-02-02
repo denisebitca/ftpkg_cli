@@ -35,7 +35,7 @@ fi
 if [ "$DOCKER_ERROR" == "2" ] && [ "$PASSWORD" == "" ]; then
 	print "$blue" "$bold" "[INFO]"
 	print "" "" " - This is your first time running this version of ftpkg_cli, so the Docker image needs to be built. This will take a bit, especially on Mac dumps.\n"
-	docker build -q -t ftpkg:$VERSION ./docker 
+	docker build -q -t ftpkg:$VERSION ./cli_utils/docker 
 fi
 
 if [ "$PASSWORD" == "" ]; then 
