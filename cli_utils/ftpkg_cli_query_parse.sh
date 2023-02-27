@@ -120,5 +120,5 @@ while true; do
 	I=$((I+1))
 done;
 
-less "/tmp/$tmp_filename"
+less -Rf "/tmp/$tmp_filename"
 rm "/tmp/$tmp_filename"
