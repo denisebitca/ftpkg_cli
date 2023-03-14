@@ -24,7 +24,7 @@ Here are all the options you can use:
 
 ```
 $ ./ftpkg_cli
-ftpkg_cli v0.2 - terminal utility for installing curated Flatpak packages by the 42 Paris team on 42 Paris dumps
+ftpkg_cli v0.3 - terminal utility for installing curated Flatpak packages by the 42 Paris team on 42 Paris dumps
 Copyright (C) 2023 Denise BITCA
 This program comes with ABSOLUTELY NO WARRANTY; This is free software, and you are welcome to redistribute it under certain conditions; see LICENSE file for more.
 
@@ -74,8 +74,8 @@ If you're on a Mac dump, it might be faster for you to keep the password somewhe
 To obtain said password on a Dell dump:
 ```bash
 cd cli_utils
-docker build -q -t ftpkg:v0.2 ./docker
-docker run -v "/usr/bin/ftpkg:/mnt/ftpkg" ftpkg:v0.2
+docker build -q -t ftpkg:v0.3 ./docker
+docker run -v "/usr/bin/ftpkg:/mnt/ftpkg" ftpkg:v0.3
 ```
 
 To use the password on a Mac dump:
