@@ -55,7 +55,7 @@ if [ "$STATUS_RESULT" != "0" ]; then
 fi
 rm /tmp/ftpkgclistatus
 
-if [ ! "$STATUS_RESULT" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND" ] || [ "$STATUS" == "" ]; then
+if [ "$STATUS_RESULT" == "0" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND" ] || [ "$STATUS" == "" ]; then
 	print "$red" "$bold" "[FAIL]"
 	if [ "$STATUS" == "" ]; then
 		print "" "" " - The server did not respond.\n"
