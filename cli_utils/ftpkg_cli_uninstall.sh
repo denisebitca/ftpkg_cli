@@ -39,14 +39,21 @@ if [ "$DOCKER_ERROR" == "2" ] && [ "$PASSWORD" == "" ]; then
 fi
 
 if [ "$PASSWORD" == "" ]; then 
-	PASSWORD=$(docker run --mount type=bind,source=/usr/bin,target=/mnt ftpkg:$VERSION)
+	PASSWORD=$(docker run -v "/usr/bin/ftpkg:/mnt/ftpkg" ftpkg:$VERSION)
 fi
 
 # Initial CURL - removing '"icon": "<anything>",' with sed
 STATUS=$(curl -s "http://localhost:4242/uninstall/$PASSWORD/$PACKAGENAME")
 # TODO: extend cases in which the result could be invalid
-echo "$STATUS" | grep -qs "404 Not Found"
+
+echo "$STATUS" > /tmp/ftpkgclistatus
+grep -qs "404 Not Found" /tmp/ftpkgclistatus
 STATUS_RESULT=$?
+if [ "$STATUS_RESULT" != "0" ]; then
+	grep -qs "500 Internal Server Error" /tmp/ftpkgclistatus
+	STATUS_RESULT=$?
+fi
+rm /tmp/ftpkgclistatus
 
 if [ ! "$STATUS_RESULT" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND" ] || [ "$STATUS" == "" ]; then
 	print "$red" "$bold" "[FAIL]"

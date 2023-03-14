@@ -39,16 +39,24 @@ if [ "$DOCKER_ERROR" == "2" ] && [ "$PASSWORD" == "" ]; then
 fi
 
 if [ "$PASSWORD" == "" ]; then 
-	PASSWORD=$(docker run --mount type=bind,source=/usr/bin,target=/mnt ftpkg:$VERSION)
+	PASSWORD=$(docker run -v "/usr/bin/ftpkg:/mnt/ftpkg" ftpkg:$VERSION)
 fi
 
 # Initial CURL - removing '"icon": "<anything>",' with sed
 STATUS=$(curl -s "http://localhost:4242/install/$PASSWORD/$PACKAGENAME")
-# TODO: extend cases in which the result could be invalid
-echo "$STATUS" | grep -qs "404 Not Found"
-STATUS_RESULT=$?
 
-if [ ! "$STATUS_RESULT" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND" ] || [ "$STATUS" == "" ]; then
+# TODO: extend cases in which the result could be invalid
+
+echo "$STATUS" > /tmp/ftpkgclistatus
+grep -qs "404 Not Found" /tmp/ftpkgclistatus
+STATUS_RESULT=$?
+if [ "$STATUS_RESULT" != "0" ]; then
+	grep -qs "500 Internal Server Error" /tmp/ftpkgclistatus
+	STATUS_RESULT=$?
+fi
+rm /tmp/ftpkgclistatus
+
+if [ "$STATUS_RESULT" == "0" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND" ] || [ "$STATUS" == "" ]; then
 	print "$red" "$bold" "[FAIL]"
 	if [ "$STATUS" == "" ]; then
 		print "" "" " - the server did not respond.\n"
@@ -56,10 +64,10 @@ if [ ! "$STATUS_RESULT" ] || [ "$STATUS" == "KO" ] || [ "$STATUS" == "NOT FOUND"
 		print "" "" " - your package was not found.\n"
 	elif [ "$STATUS" == "KO" ]; then
 		print "" "" " - your password is incorrect.\n"
-	elif [ "$STATUS" == "" ]; then
+	else
 		print "" "" " - here are more details.\n"
 		echo "$STATUS"
-	fi;
+	fi
 	exit 1;
 fi
 
