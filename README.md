@@ -75,7 +75,7 @@ To obtain said password on a Dell dump:
 ```bash
 cd cli_utils
 docker build -q -t ftpkg:v0.2 ./docker
-docker run --mount type=bind,source=/usr/bin,target=/mnt ftpkg:v0.2
+docker run -v "/usr/bin/ftpkg:/mnt/ftpkg" ftpkg:v0.2
 ```
 
 To use the password on a Mac dump:
